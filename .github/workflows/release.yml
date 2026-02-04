@@ -1,0 +1,41 @@
+name: Build and Release KeyCast
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  build-release:
+    runs-on: windows-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup .NET 10
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Get version
+        id: version
+        run: |
+          $version = "${{ github.event.release.tag_name }}" -replace '^v', ''
+          echo "VERSION=$version" >> $env:GITHUB_OUTPUT
+        shell: pwsh
+      
+      - name: Restore dependencies
+        run: dotnet restore
+      
+      - name: Publish KeyCast
+        run: dotnet publish KeyStream.Service/KeyStream.Service.csproj /p:PublishProfile=win-x64 /p:Version=${{ steps.version.outputs.VERSION }}
+      
+      - name: Upload KeyCast.exe
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ github.event.release.upload_url }}
+          asset_path: ./KeyStream.Service/bin/Publish/net10.0-windows/KeyCast.exe
+          asset_name: KeyCast_v${{ steps.version.outputs.VERSION }}.exe
+          asset_content_type: application/vnd.microsoft.portable-executable

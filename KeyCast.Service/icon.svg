@@ -1,0 +1,21 @@
+<svg width="256" height="256" viewBox="0 0 256 256" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Key Base (Shadow) -->
+  <rect x="28" y="56" width="200" height="172" rx="40" fill="#2D3436"/>
+  
+  <!-- Key Top (Surface) -->
+  <rect x="28" y="28" width="200" height="172" rx="40" fill="#F5F6FA"/>
+  
+  <!-- Signal Symbol (Blue) -->
+  <g transform="translate(128, 114)">
+    <!-- Center Dot -->
+    <circle cx="0" cy="20" r="16" fill="#0984E3"/>
+    
+    <!-- Inner Arc -->
+    <path d="M-28 -8C-20.5 -15.5 -10.5 -20 0 -20C10.5 -20 20.5 -15.5 28 -8" 
+          stroke="#0984E3" stroke-width="12" stroke-linecap="round"/>
+    
+    <!-- Outer Arc -->
+    <path d="M-52 -32C-38.5 -45.5 -20 -52 0 -52C20 -52 38.5 -45.5 52 -32" 
+          stroke="#0984E3" stroke-width="12" stroke-linecap="round"/>
+  </g>
+</svg>
