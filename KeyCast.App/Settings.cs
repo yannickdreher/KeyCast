@@ -1,4 +1,4 @@
-namespace KeyCast.Service;
+namespace KeyCast.App;
 
 public class Settings
 {

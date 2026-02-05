@@ -2,7 +2,7 @@ using Microsoft.Extensions.Logging;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 
-namespace KeyCast.Service.Services
+namespace KeyCast.App.Services
 {
     public class KeyboardHookService(ILogger<KeyboardHookService> logger) : IDisposable
     {

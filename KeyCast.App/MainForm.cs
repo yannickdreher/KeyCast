@@ -1,6 +1,6 @@
-using KeyCast.Service.Services;
+using KeyCast.App.Services;
 
-namespace KeyCast.Service;
+namespace KeyCast.App;
 
 public class MainForm : Form
 {

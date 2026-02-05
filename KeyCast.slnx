@@ -6,5 +6,5 @@
     <Platform Name="x64" />
     <Platform Name="x86" />
   </Configurations>
-  <Project Path="KeyCast.Service/KeyCast.Service.csproj" />
+  <Project Path="KeyCast.App/KeyCast.App.csproj" />
 </Solution>

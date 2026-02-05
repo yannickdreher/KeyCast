@@ -1,8 +1,8 @@
-using KeyCast.Service.Services;
+using KeyCast.App.Services;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
-namespace KeyCast.Service;
+namespace KeyCast.App;
 
 public class Worker(
     ILogger<Worker> logger,

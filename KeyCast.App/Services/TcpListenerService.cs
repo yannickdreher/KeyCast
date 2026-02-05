@@ -5,7 +5,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text;
 
-namespace KeyCast.Service.Services;
+namespace KeyCast.App.Services;
 
 public class TcpListenerService(ILogger<TcpListenerService> logger, IOptions<Settings> settings) : IDisposable
 {

@@ -1,5 +1,5 @@
-using KeyCast.Service;
-using KeyCast.Service.Services;
+using KeyCast.App;
+using KeyCast.App.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
@@ -10,7 +10,6 @@ var builder = Host.CreateApplicationBuilder(args);
 
 // Register Services
 builder.Services.AddSingleton<MainForm>();
-builder.Services.AddSingleton<Settings>(); // Assuming Settings is registered or bound from config
 builder.Services.AddSingleton<TcpListenerService>();
 builder.Services.AddSingleton<KeyboardHookService>();
 builder.Services.AddHostedService<Worker>();
