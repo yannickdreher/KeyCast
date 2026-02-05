@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Logging;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
+using System.Text;
 
 namespace KeyCast.App.Services
 {
@@ -37,9 +38,7 @@ namespace KeyCast.App.Services
 
         private void MessageLoopThread()
         {
-            // Capture the native thread ID of this thread
             _threadId = GetCurrentThreadId();
-
             _hookCallback = HookCallback;
             _hookId = SetHook(_hookCallback);
 
@@ -51,9 +50,7 @@ namespace KeyCast.App.Services
 
             _logger.LogInformation("Keyboard hook installed (ID: {HookId}) on Thread {ThreadId}", _hookId, _threadId);
 
-            // Windows Message Loop
             MSG msg;
-            // GetMessage pumps the message loop. It returns 0 when WM_QUIT is received.
             while (_isRunning && GetMessage(out msg, IntPtr.Zero, 0, 0) != 0)
             {
                 TranslateMessage(ref msg);
@@ -81,7 +78,9 @@ namespace KeyCast.App.Services
             if (nCode >= 0 && (wParam == WM_KEYDOWN || wParam == WM_SYSKEYDOWN))
             {
                 int vkCode = Marshal.ReadInt32(lParam);
-                char key = ConvertVirtualKeyToChar(vkCode);
+                int scanCode = Marshal.ReadInt32(lParam, sizeof(int));
+
+                char key = ConvertVirtualKeyToChar(vkCode, scanCode);
                 
                 if (key != '\0')
                 {
@@ -93,43 +92,30 @@ namespace KeyCast.App.Services
             return CallNextHookEx(_hookId, nCode, wParam, lParam);
         }
 
-        private static char ConvertVirtualKeyToChar(int vkCode)
+        private char ConvertVirtualKeyToChar(int vkCode, int scanCode)
         {
-            // Check if Shift is pressed
-            bool shiftPressed = (GetKeyState(0x10) & 0x8000) != 0;
-            bool capsLock = (GetKeyState(0x14) & 0x0001) != 0;
-            bool upperCase = shiftPressed ^ capsLock;
+            IntPtr foregroundWindow = GetForegroundWindow();
+            uint foregroundThreadId = GetWindowThreadProcessId(foregroundWindow, IntPtr.Zero);
+            IntPtr keyboardLayout = GetKeyboardLayout(foregroundThreadId);
 
-            return vkCode switch
+            byte[] keyState = new byte[256];
+            for (int i = 0; i < 256; i++)
             {
-                // Letters (A-Z)
-                >= 0x41 and <= 0x5A => upperCase ? (char)vkCode : (char)(vkCode + 32),
-                
-                // Numbers and special characters
-                0x30 => shiftPressed ? ')' : '0',
-                0x31 => shiftPressed ? '!' : '1',
-                0x32 => shiftPressed ? '@' : '2',
-                0x33 => shiftPressed ? '#' : '3',
-                0x34 => shiftPressed ? '$' : '4',
-                0x35 => shiftPressed ? '%' : '5',
-                0x36 => shiftPressed ? '^' : '6',
-                0x37 => shiftPressed ? '&' : '7',
-                0x38 => shiftPressed ? '*' : '8',
-                0x39 => shiftPressed ? '(' : '9',
-                
-                // Numpad
-                >= 0x60 and <= 0x69 => (char)('0' + (vkCode - 0x60)),
-                
-                // Special keys
-                0x0D => '\n',  // Enter
-                0x20 => ' ',   // Space
-                0xBE => shiftPressed ? '>' : '.',
-                0xBC => shiftPressed ? '<' : ',',
-                0xBD => shiftPressed ? '_' : '-',
-                0xBB => shiftPressed ? '+' : '=',
-                
-                _ => '\0'
-            };
+                short keyStatus = GetKeyState(i);
+                keyState[i] = (byte)((keyStatus >> 8) | (keyStatus & 1));
+            }
+
+            StringBuilder sb = new(5);
+            int result = ToUnicodeEx((uint)vkCode, (uint)scanCode, keyState, sb, sb.Capacity, 0, keyboardLayout);
+            
+            if (result > 0 && sb.Length > 0)
+            {
+                return sb[0];
+            }
+
+            if (vkCode == 0x0D) return '\n';
+
+            return '\0';
         }
 
         public void Stop()
@@ -139,10 +125,8 @@ namespace KeyCast.App.Services
 
             _isRunning = false;
             
-            // Stop message loop
             if (_messageLoopThread?.IsAlive == true && _threadId != 0)
             {
-                // Send WM_QUIT (0x0012) to the specific native thread
                 PostThreadMessage(_threadId, 0x0012, IntPtr.Zero, IntPtr.Zero); 
                 _messageLoopThread.Join(TimeSpan.FromSeconds(5));
             }
@@ -190,6 +174,25 @@ namespace KeyCast.App.Services
 
         [DllImport("kernel32.dll")]
         private static extern uint GetCurrentThreadId();
+
+        [DllImport("user32.dll", CharSet = CharSet.Unicode)]
+        private static extern int ToUnicodeEx(
+            uint wVirtKey,
+            uint wScanCode,
+            byte[] lpKeyState,
+            [Out, MarshalAs(UnmanagedType.LPWStr)] StringBuilder pwszBuff,
+            int cchBuff,
+            uint wFlags,
+            IntPtr dwhkl);
+
+        [DllImport("user32.dll")]
+        private static extern IntPtr GetKeyboardLayout(uint idThread);
+
+        [DllImport("user32.dll")]
+        private static extern IntPtr GetForegroundWindow();
+
+        [DllImport("user32.dll")]
+        private static extern uint GetWindowThreadProcessId(IntPtr hWnd, IntPtr ProcessId);
 
         [StructLayout(LayoutKind.Sequential)]
         private struct MSG
