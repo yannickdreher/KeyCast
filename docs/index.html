@@ -4,9 +4,9 @@
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>moneo | track and trace simulator - Downloads</title>
-    <link rel="icon" type="image/svg+xml" href="images/logo.svg">
-    <link rel="alternate icon" href="images/logo.ico">
+    <title>KeyCast - Downloads</title>
+    <link rel="icon" type="image/svg+xml" href="images/icon.svg">
+    <link rel="alternate icon" href="images/icon.ico">
     <style>
         * {
             margin: 0;
@@ -35,26 +35,10 @@
             margin-bottom: 10px;
             padding: 40px 20px;
             border-radius: 8px;
-            box-shadow: 0 4px 16px rgba(0,0,0,0.4);
             overflow: hidden;
         }
 
-        .header::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-image: url('images/background.svg');
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-            opacity: 0.2;
-            z-index: 0;
-        }
-
-        .header-logo {
+        .header-icon {
             width: 64px;
             height: 64px;
             position: relative;
@@ -309,8 +293,8 @@
 <body>
     <div class="container">
         <div class="header">
-            <img src="images/logo.svg" alt="moneo logo" class="header-logo">
-            <h1>moneo | track and trace simulator</h1>
+            <img src="images/icon.svg" alt="moneo icon" class="header-icon">
+            <h1>KeyCast</h1>
         </div>
         <p class="subtitle">Download the latest version</p>
 
@@ -319,10 +303,7 @@
         </div>
 
         <div class="footer">
-            <p>© Yannick Dreher | <a href="https://github.com/yannickdreher/moneo-track-trace-simulator">GitHub Repository</a></p>
-            <p class="trademark">
-                moneo® is a registered trademark of <a href="https://www.ifm.com" target="_blank">ifm electronic gmbh</a>, Friedrichstraße 1, 45128 Essen, Germany
-            </p>
+            <p>© Yannick Dreher | <a href="https://github.com/yannickdreher/KeyCast">GitHub Repository</a></p>
         </div>
     </div>
 
@@ -332,7 +313,7 @@
 
     <script>
         const REPO_OWNER = 'yannickdreher';
-        const REPO_NAME = 'moneo-track-trace-simulator';
+        const REPO_NAME = 'KeyCast';
         const API_URL = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/releases`;
 
         document.addEventListener('DOMContentLoaded', function() {
